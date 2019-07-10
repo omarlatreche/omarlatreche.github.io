@@ -1,0 +1,37 @@
+*, body {
+	margin:0;
+	padding:0;
+}
+body {
+	font-family:sans-serif;
+	outline:none;
+	background:#eee;
+}
+p {
+	margin:10px 0 0 0;
+}
+a {
+	color:#000;
+	text-decoration:none;
+}
+a:hover {
+	color:#000;
+	text-decoration:underline;
+	cursor:pointer;
+}
+a:visited {
+	color:#000;
+}
+.menu {
+	width:100%;
+	background:#fff;
+	padding:15px 30px 15px 30px;
+}
+.menu h3 {
+	font-size:30px;
+	font-family:CenturyGothic;
+}
+.menu a:hover {
+	text-decoration:none;
+	cursor:pointer;
+}
