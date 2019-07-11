@@ -103,6 +103,11 @@ button:hover {
 }
 .card:hover {
 	box-shadow:0 8px 16px 0 rgba(0,0,0,0.2);
+	margin:0px 30px 30px 30px;
+}
+.card:focus {
+	box-shadow:0 8px 16px 0 rgba(0,0,0,0.2);
+	margin:0px 30px 30px 30px;
 }
 .card h2 {
 	font-size:25px;
@@ -119,4 +124,15 @@ button:hover {
 }
 .card-content {
 	padding:15px 20px 15px 20px;
+}
+.mobile_only {
+	width:100%;
+	text-align:center;
+	padding-top:30px;
+	background:#eee;
+	height:100%;
+}
+.mobile_only h1 {
+	font-size:80px;
+	margin-bottom:30px;
 }
