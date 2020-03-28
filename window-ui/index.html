@@ -10,41 +10,79 @@
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="script.js"></script>
 </head>
-<body>
+<body scroll="no">
 	<div class="window" id="welcome">
-		<h1>
+		<h1 id="welcome-header">
 			<span>Welcome</span>
-			<ul class="window-controls">
-				<li id="welcome-minimise">
-					<span>_</span>
-				</li>
-			</ul>
 		</h1>
-		<div class="window-body">
+		<button class="window-controls" id="welcome-minimise">
+			<span>_</span>
+		</button>
+		<div class="window-body" id="welcome-body">
 			<h1>Welcome</h1>
 			<p>This new UI is designed to replicate a desktop UI.</p>
 			<p>Currently adding new features regularly.</p>
 			<p>Any suggestions please email <a href="mailto:omarl1933@gmail.com">omarl1933@gmail.com</a>.</p>
 			<p>Thanks.</p>
+			<p>------------------------</p>
+			<p>Change log:</p>
+			<ul>
+				<li>Hover over effect for minimise button now covers whole of the header</li>
+				<li>Added minimise and focus effects to app bar items</li>
+				<li>Added pages for art and contact.</li>
+			</ul>
 		</div>
 	</div>
 	<div class="window" id="aurum">
-		<h1>
+		<h1 id="aurum-header">
 			<span>Aurum</span>
-			<ul class="window-controls">
-				<li id="aurum-minimise">
-					<span>_</span>
-				</li>
-			</ul>
 		</h1>
+		<button class="window-controls" id="aurum-minimise">
+			<span>_</span>
+		</button>
+		<div class="window-body" id="aurum-body">
+			<span>* Aurum here *</span>
+		</div>
+	</div>
+	<div class="window" id="art">
+		<h1 id="aurum-header">
+			<span>Art</span>
+		</h1>
+		<button class="window-controls" id="art-minimise">
+			<span>_</span>
+		</button>
+		<div class="window-body" id="art-body">
+			<span>* Art here *</span>
+		</div>
+	</div>
+	<div class="window" id="contact">
+		<h1 id="contact-header">
+			<span>Contact</span>
+		</h1>
+		<button class="window-controls" id="contact-minimise">
+			<span>_</span>
+		</button>
+		<div class="window-body" id="contact-body">
+			<h1>Contact</h1>
+			<h2>Email</h2>
+			<p>You can email me directly on <a href="mailto:omarl1933@gmail.com">omarl1933@gmail.com</a>.</p>
+			<h2>Instagram</h2>
+			<p>You can also shoot me a DM on Instagram - <a href="https://instagram.com/omzlat">@omzlat</a>.</p>
+		</div>
 	</div>
 	<div class="application-bar">
 		<ul class="applications">
-			<li id="welcome-app-item">
+			<li id="welcome-app-item" class="focused">
 				<span>Welcome</span>
 			</li>
-			<li id="aurum-app-item">
+			<li id="aurum-app-item" class="minimised">
 				<span>Aurum</span>
+			</li>
+			<li id="art-app-item" class="minimised">
+				<span>Art</span>
+			</li>
+			<li id="contact-app-item" class="minimised">
+				<span>Contact</span>
 			</li>
 		</ul>
 	</div>

@@ -1,12 +1,15 @@
 $(document).ready(function(){
+	// Initiate draggable windows
 	$(function(){
-		$(".window").draggable();
+		$(".window").draggable({
+			cancel:".window-body"
+		});
 	});
 	
-	var windows = ["welcome","aurum"];
+	var windows = ["welcome","aurum","art","contact"];
 	
 	function bringWindowToFront(windowName){
-		for (var i = 0; i < windows.length; i++) {
+		for(var i = 0; i < windows.length; i++) {
 			if(windows[i] != windowName){
 				$("#" + windows[i]).css("z-index","0");
 			}
@@ -16,39 +19,86 @@ $(document).ready(function(){
 		}
 	}
 	
-	// Welcome functions
-	$("#welcome-minimise").click(function(){
-		var windowName = $(this).closest("div");
-		windowName.css("display","none");
-		//$(windowName.attr("id") + "-app-item").removeClass("focused");
-	});
-	$("#welcome-app-item").click(function(){
-		var windowName = "welcome";
+	function minimise(windowName){
+		$("#" + windowName).css("display","none");
+		$("#" + windowName + "-app-item").addClass("minimised");
+		$("#" + windowName + "-app-item").removeClass("focused");
+	}
+	
+	function openApp(windowName){
 		$("#" + windowName).css("display","block");
-		//$("#" + windowName + "-app-item").addClass("focused");
-		bringToFront(windowName);
+		$("#" + windowName + "-app-item").removeClass("minimised");
+		bringWindowToFront(windowName);
+	}
+	
+	function addFocus(windowName){
+		for(var i = 0; i < windows.length; i++) {
+			if(windows[i] != windowName){
+				$("#" + windows[i] + "-app-item").removeClass("focused");
+			}
+			if(windows[i] == windowName){
+				$("#" + windows[i] + "-app-item").addClass("focused");
+			}
+		}
+	}
+	
+	// Minimise click handelers
+	$("#welcome-minimise").click(function(){
+		minimise("welcome");
 	});
-	$("#welcome").click(function(){
-		//$("#welcome-app-item").addClass("focused");
-		//$("#test-app-item").removeClass("focused");
-		bringWindowToFront("welcome");
+	$("#aurum-minimise").click(function(){
+		minimise("aurum");
+	});
+	$("#art-minimise").click(function(){
+		minimise("art");
+	});
+	$("#contact-minimise").click(function(){
+		minimise("contact");
 	});
 	
-	// Aurum functions
-	$("#aurum-minimise").click(function(){
-		var windowName = $(this).closest("div");
-		windowName.css("display","none");
-		//$(windowName.attr("id") + "-app-item").removeClass("focused");
+	// App icon click handelers
+	$("#welcome-app-item").click(function(){
+		openApp("welcome");
+		addFocus("welcome");
 	});
 	$("#aurum-app-item").click(function(){
-		var windowName = "aurum";
-		$("#" + windowName).css("display","block");
-		//$("#" + windowName + "-app-item").addClass("focused");
-		bringToFront(windowName);
+		openApp("aurum");
+		addFocus("aurum");
+	});
+	$("#art-app-item").click(function(){
+		openApp("art");
+		addFocus("art");
+	});
+	$("#contact-app-item").click(function(){
+		openApp("contact");
+		addFocus("contact");
+	});
+	
+	// Window click handelers
+	$("#welcome").click(function(){
+		bringWindowToFront("welcome");
 	});
 	$("#aurum").click(function(){
-		//$("#welcome-app-item").addClass("focused");
-		//$("#test-app-item").removeClass("focused");
 		bringWindowToFront("aurum");
+	});
+	$("#art").click(function(){
+		bringWindowToFront("art");
+	});
+	$("#contact").click(function(){
+		bringWindowToFront("contact");
+	});
+	
+	// Change focus handelers
+	$("#welcome-header, #welcome-body").click(function(){
+		addFocus("welcome");
+	});
+	$("#aurum-header, #aurum-body").click(function(){
+		addFocus("aurum");
+	});
+	$("#art-header, #art-body").click(function(){
+		addFocus("art");
+	});
+	$("#contact-header, #contact-body").click(function(){
+		addFocus("contact");
 	});
 });
