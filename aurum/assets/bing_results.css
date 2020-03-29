@@ -1,0 +1,31 @@
+.bing_results {
+    margin-top:10px;
+    max-height:300px;
+    overflow-x:hidden;
+    font-size:13px;
+}
+.bing_results h2 {
+    font-size:18px;
+    line-height:19px;
+}
+.bing_results h2 strong {
+    font-weight:normal;
+}
+.bing_results li,p,h3 {
+    list-style:none;
+    border-collapse:collapse;
+    margin:0;
+    padding:0;
+}
+.bing_results cite {
+    color:#006d21;
+    font-style:normal;
+    word-wrap:break-word;
+}
+.bing_results .b_caption {
+    line-height:17px;
+    padding-bottom:10px;
+}
+.bing_results .b_deep,.social_ic,.tab-container,.b_factrow,.b_vPanel,.c_tlbxTrg,.sa_uc,.rc_vlHorizontalImage,.b_overhangR,form,table,.inner {
+    display:none;
+}
