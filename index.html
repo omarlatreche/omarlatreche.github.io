@@ -9,6 +9,25 @@
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="script.js"></script>
+	<script type="text/javascript">
+            window.onload = function(){
+                if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+					document.body.innerHTML = '\
+							<div style="text-align:center; margin-top:10px; width:100%;">\
+								<p style="color:#dc3545; font-family:sans-serif">This website is currently only available on computers and laptops.</p>\
+							</div>';
+					document.body.style.background = 'none';
+                } else {
+                    if (window.jQuery == null){
+                        document.body.innerHTML = '\
+							<div style="text-align:center; margin-top:10px; width:100%;">\
+								<p style="color:#dc3545; font-family:sans-serif">Fatal error. Please make sure you have an internet connection.</p>\
+							</div>';
+						document.body.style.background = 'none';
+                    }
+                }
+            }
+    </script>
 </head>
 <body scroll="no">
 	<div class="window" id="welcome">

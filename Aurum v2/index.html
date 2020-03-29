@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Aurum</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/chatpage.css">
+    </head>
+    <body>
+        <script src="scripts/setUser.js"></script>
+		<div class="banner">
+			<label for="usrid">Username: </label><input type="text" id="usrid"><button id="set_username">Go</button>
+		</div>
+        <div class="chat_cont">
+		<center>
+        <div class="chats"></div>
+		</center>
+		<script src="scripts/genResponse.js"></script>
+        <script src="scripts/sendMessage.js"></script>
+		<div class="banner footer"><input type="text" id="msg" disabled><button id="send" disabled>Send</button></div>
+		</div>
+	</body>
+</html>
