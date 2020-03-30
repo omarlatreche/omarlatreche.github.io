@@ -19,15 +19,15 @@ $(document).ready(function(){
 		}
 	}
 	
-	function minimise(windowName){
+	function minimize(windowName){
 		$("#" + windowName).css("display","none");
-		$("#" + windowName + "-app-item").addClass("minimised");
+		$("#" + windowName + "-app-item").addClass("minimized");
 		$("#" + windowName + "-app-item").removeClass("focused");
 	}
 	
 	function openApp(windowName){
 		$("#" + windowName).css("display","block");
-		$("#" + windowName + "-app-item").removeClass("minimised");
+		$("#" + windowName + "-app-item").removeClass("minimized");
 		bringWindowToFront(windowName);
 	}
 	
@@ -42,18 +42,18 @@ $(document).ready(function(){
 		}
 	}
 	
-	// Minimise click handelers
-	$("#welcome-minimise").click(function(){
-		minimise("welcome");
+	// minimize click handelers
+	$("#welcome-minimize").click(function(){
+		minimize("welcome");
 	});
-	$("#projects-minimise").click(function(){
-		minimise("projects");
+	$("#projects-minimize").click(function(){
+		minimize("projects");
 	});
-	$("#art-minimise").click(function(){
-		minimise("art");
+	$("#art-minimize").click(function(){
+		minimize("art");
 	});
-	$("#contact-minimise").click(function(){
-		minimise("contact");
+	$("#contact-minimize").click(function(){
+		minimize("contact");
 	});
 	
 	// App icon click handelers

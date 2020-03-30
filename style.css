@@ -84,7 +84,7 @@ body {
 	position:absolute;
 	top:34px;
 }
-.applications > .minimised {
+.applications > .minimized {
 	text-decoration:underline;
 }
 .focused {
