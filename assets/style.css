@@ -132,6 +132,7 @@ input {
 	font-weight: 300;
 	font-size: 14px;
 	border: 1px solid #414141;
+	border-radius: none;
 	width: 630px;
 }
 input:hover {
@@ -147,6 +148,7 @@ textarea {
 	font-weight: 300;
 	font-size: 14px;
 	border: 1px solid #414141;
+	border-radius: none;
 	width: 630px;
 	max-width: 630px;
 	min-height: 100px;
@@ -165,4 +167,7 @@ textarea:focus {
 	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
 	font-weight: 300;
 	font-size: 14px;
+}
+.disabled:hover {
+	cursor: not-allowed;
 }
