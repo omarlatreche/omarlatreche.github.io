@@ -4,13 +4,15 @@
 body {
 	margin: 0;
 	display: none;
-	min-width: 1150px;
 }
 .navbar {
 	float: left;
 	width: 107px;
 	position: fixed;
 	padding: 60px;
+}
+.navbar img {
+	display: none;
 }
 .content {
 	float: right;
@@ -82,6 +84,12 @@ li {
 }
 .navbar li > a:hover {
 	color: #000;
+}
+.sidebar {
+	display: none;
+}
+.overlay {
+	display: none;
 }
 .footer {
 	width: calc(100% - 227px);
@@ -170,4 +178,115 @@ textarea:focus {
 }
 .disabled:hover {
 	cursor: not-allowed;
+}
+@media only screen and (max-width: 768px) {
+	.navbar {
+		width: calc(100% - 10vw);
+		float: none;
+		padding: 5vw;
+		height: 13vw;
+		position: relative;
+	}
+	.navbar ul {
+		display: none;
+	}
+	.navbar h1 {
+		margin: 0;
+		float: left;
+		font-size: 6vw;
+	}
+	.navbar img {
+		float: right;
+		display: block;
+		margin-top: 15px;
+		width: 9.5vw;
+	}
+	.navbar img:hover {
+		cursor: pointer;
+	}
+	.sidebar {
+		display: block;
+		float: right;
+		top: 0;
+		right: -1000px;
+		position: fixed;
+		background: #fff;
+		width: calc(80% - 10vw);
+		height: calc(100% - 10vw);
+		padding: 5vw;
+		transition:0.4s ease;
+		z-index: 1;
+	}
+	.sidebar ul {
+		margin-top: 30%;
+		list-style: none;
+	}
+	.sidebar li {
+		font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+		font-size: 4vw;
+		margin-bottom: 5vw;
+	}
+	.sidebar li > a {
+		color: #414141;
+		text-decoration: none;
+	}
+	.sidebar img {
+		width: 7.3vw;
+		float: right;
+		margin-top: 3vw;
+	}
+	.sidebar img:hover {
+		cursor: pointer;
+	}
+	.overlay {
+		opacity: 50%;
+		background: #414141;
+		width: 100%;
+		height: 100%;
+		float: left;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 0;
+	}
+	h1 {
+		font-size: 6vw;
+	}
+	p {
+		font-size: 4vw;
+	}
+	h2 {
+		font-size: 4vw;
+	}
+	button {
+		font-size: 4vw;
+		padding: 3vw 10vw;
+	}
+	.content {
+		width: calc(100% - 10vw);
+		float: none;
+		padding: 0vw 5vw;
+	}
+	.content-container {
+		width: 100% !important;
+	}
+	.content-container img {
+		width: 100%;
+	}
+	.seperator {
+		width: 100% !important;
+	}
+	#art-work {
+		width: 100%;
+	}
+	.footer {
+		float: none;
+		width: 100%;
+	}
+	.footer-content {
+		width: 90%;
+	}
+	.footer-content img {
+		width: 5vw;
+	}
 }
