@@ -262,6 +262,29 @@ textarea:focus {
 		font-size: 4vw;
 		padding: 3vw 10vw;
 	}
+	label {
+		font-size: 4vw;
+		margin: 4vw 0vw;
+	}
+	input {
+		padding: 2.5vw 4vw;
+		font-size: 4vw;
+		width: calc(100% - 10vw);
+	}
+	textarea {
+		padding: 2.5vw 4vw;
+		font-size: 4vw;
+		width: calc(100% - 9vw);
+		max-width: calc(100% - 9vw);
+		min-height: 50vw;
+	}
+	.simple-btn {
+		padding: 5vw 0vw 5vw 5vw;
+		font-size: 4vw;
+	}
+	#phone-icon {
+		margin-left: 170px !important;
+	}
 	.content {
 		width: calc(100% - 10vw);
 		float: none;
