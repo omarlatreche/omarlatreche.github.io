@@ -33,13 +33,13 @@ h1 {
 	font-weight: normal;
 }
 h2 {
-	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+	font-family: 'weblysleek_uilight';
 	font-size: 14px;
 	font-weight: normal;
 	color: #414141;
 }
 p {
-	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+	font-family: 'weblysleek_uilight';
 	font-size: 14px;
 	color: #414141;
 	font-weight: 300;
@@ -50,7 +50,7 @@ button {
 	outline: none;
 	color: #fff;
 	border: none;
-	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+	font-family: 'weblysleek_uilight';
 	font-size: 14px;
 }
 button:hover{
@@ -58,7 +58,7 @@ button:hover{
 	cursor: pointer;
 }
 li {
-	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+	font-family: 'weblysleek_uilight';
 	font-size: 14px;
 	color: #414141;
 	font-weight: 300;
@@ -76,7 +76,7 @@ li {
 }
 .navbar li {
 	list-style: none;
-	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+	font-family: 'weblysleek_uilight';
 	font-size: 14px;
 }
 .navbar li > a {
@@ -136,7 +136,7 @@ label {
 }
 input {
 	padding: 5px 10px;
-	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+	font-family: 'weblysleek_uilight';
 	font-weight: 300;
 	font-size: 14px;
 	border: 1px solid #414141;
@@ -152,7 +152,7 @@ input:focus {
 }
 textarea {
 	padding: 5px 10px;
-	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+	font-family: 'weblysleek_uilight';
 	font-weight: 300;
 	font-size: 14px;
 	border: 1px solid #414141;
@@ -172,7 +172,7 @@ textarea:focus {
 	background: none;
 	padding: 10px 0px 10px 10px;
 	color: #414141;
-	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+	font-family: 'weblysleek_uilight';
 	font-weight: 300;
 	font-size: 14px;
 }
@@ -222,7 +222,7 @@ textarea:focus {
 		list-style: none;
 	}
 	.sidebar li {
-		font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+		font-family: 'weblysleek_uilight';
 		font-size: 4vw;
 		margin-bottom: 7vw;
 	}
