@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Hack Runner — Mobile</title>
+<style>
+  html, body { margin:0; padding:0; background:#08090f; color:#e8f0ff; font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif; }
+  #ui { position:fixed; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(180deg, rgba(0,0,0,.6), rgba(0,0,0,0)); z-index:10; }
+  .pill { background:rgba(0,0,0,.35); padding:6px 10px; border:1px solid #3b4cff; border-radius:999px; font-weight:600; letter-spacing:.3px; }
+  #game { display:block; margin:0 auto; width: min(96vw, 520px); aspect-ratio: 9/16; border:1px solid #1b2040; box-shadow: 0 0 40px #061642 inset, 0 0 120px #000; background: radial-gradient(60% 60% at 50% 40%, #0a1230, #060913 70%); touch-action: manipulation; }
+  #title { position: absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; text-align:center; }
+  #title h1 { font-size: clamp(24px, 6vw, 48px); margin:0; letter-spacing:1px; text-shadow: 0 0 16px #3b4cff66, 0 0 40px #00f2ff33; }
+  #title button, #puzzle button  { padding:12px 18px; font-weight:700; border-radius:12px; border:1px solid #3b4cff; background: linear-gradient(180deg,#121a40,#0b1230); color:#dfe6ff; cursor:pointer; box-shadow:0 0 12px #2637ff55 inset; }
+  #title .tip { opacity:.8; font-size:1rem; padding: 0 10px; }
+  #puzzleOverlay { position:absolute; inset:0; display:none; align-items:center; justify-content:center; backdrop-filter: blur(4px); }
+  #puzzle { width:min(94%, 560px); background: #0b0f24cc; border:1px solid #3b4cff; border-radius:16px; padding:16px; box-shadow:0 0 40px #2637ff55; }
+  #puzzle h2 { margin:0 0 8px 0; }
+  #puzzle .meta { display:flex; gap:8px; margin-bottom:8px; opacity:.9; }
+  .grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:10px; }
+  .card { user-select:none; border:1px solid #5b6cff; background:#0c1233; padding:12px; border-radius:12px; text-align:center; cursor:pointer; box-shadow:0 0 10px #1c2cff33 inset; }
+  .card.sel { outline: 2px solid #30ffd1; }
+  .codecol { display:flex; flex-direction:column; gap:10px; }
+  .code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace; background:#0a0f28; border:1px dashed #3b4cffaa; padding:10px; border-radius:10px; }
+  #puzzle .actions { display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:10px; flex-wrap:wrap; }
+  #puzzle .timer { font-weight:800; }
+  #toast { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); padding:10px 14px; border-radius:999px; background:#06122f; border:1px solid #3b4cff; display:none; z-index:20; }
+  a { color:#9db2ff; }
+</style>
+</head>
+<body>
+  <div id="ui">
+    <div class="pill">Score: <span id="score">0</span></div>
+    <div class="pill">Speed: <span id="speed">1.0x</span></div>
+    <div class="pill">Best: <span id="best">0</span></div>
+  </div>
+  <div style="position:relative; display:flex; justify-content:center; padding:10px 0 30px;">
+    <canvas id="game" width="450" height="800"></canvas>
+    <div id="title">
+      <h1>HACK RUNNER</h1>
+      <div class="tip">iPhone-ready build. Move: <b>tap left/right</b> or swipe. Pause: <b>P</b> (with keyboard).<br/>Ordering puzzle uses <b>tap-to-swap</b> (no drag needed).</div>
+      <button id="startBtn">Start</button>
+      <div class="tip">Install to Home Screen for full-screen play.</div>
+    </div>
+    <div id="puzzleOverlay">
+      <div id="puzzle"></div>
+    </div>
+  </div>
+  <div id="toast"></div>
+<script>
+// Register service worker (works over HTTPS or localhost)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+
+// --- Core Game State ---
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const lanes = [W*0.2, W*0.5, W*0.8];
+let player = { lane:1, x: lanes[1], y: H-120, size: 26 };
+let speed = 3;
+let speedMul = 1;
+let score = 0;
+let best = Number(localStorage.getItem('hackrunner_best')||0);
+document.getElementById('best').textContent = best;
+
+let running = false;
+let paused = false;
+let lastTime = 0;
+let t = 0;
+
+let segments = [];
+let firewalls = [];
+
+function reset() {
+  player.lane = 1; player.x = lanes[1];
+  score = 0; speedMul = 1;
+  segments = []; firewalls = [];
+  spawnInitialSegments();
+}
+
+function spawnInitialSegments() {
+  for (let i=0;i<40;i++) segments.push({ y: i * -60, type:'line' });
+  let y = -300;
+  for (let i=0;i<20;i++) {
+    const lane = Math.floor(Math.random()*3);
+    firewalls.push({ y: y - 600, active:true, solved:false });
+    segments.push({ y: y, type:'obs', lane });
+    y -= 300 + Math.random()*200;
+  }
+}
+
+function drawBackground() {
+  ctx.save();
+  ctx.fillStyle = '#060913'; ctx.fillRect(0,0,W,H);
+  for (const seg of segments) if (seg.type==='line') {
+    const yy = (seg.y + t*speed*speedMul*0.6) % 60;
+    ctx.strokeStyle = '#1a2a66'; ctx.beginPath(); ctx.moveTo(0, H+yy); ctx.lineTo(W, H+yy); ctx.stroke();
+    ctx.strokeStyle = '#0e1f55';
+    for (const x of lanes) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  }
+  ctx.restore();
+}
+
+function drawPlayer() {
+  ctx.save();
+  ctx.shadowColor = '#3b4cff'; ctx.shadowBlur = 20; ctx.fillStyle = '#8fa5ff';
+  player.x += (lanes[player.lane] - player.x) * 0.25;
+  ctx.beginPath(); ctx.arc(player.x, player.y, player.size, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0; ctx.fillStyle = '#dfe6ff';
+  ctx.beginPath(); ctx.arc(player.x, player.y, player.size*0.5, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawObstacles() {
+  ctx.save();
+  for (const seg of segments) if (seg.type==='obs') {
+    const yy = seg.y + t*speed*speedMul;
+    if (yy > H + 80 || yy < -80) continue;
+    const x = lanes[seg.lane];
+    ctx.fillStyle = '#10206a'; ctx.fillRect(0, yy-80, W, 3);
+    ctx.shadowColor = '#ff4d6d'; ctx.shadowBlur = 18; ctx.fillStyle = '#ff5470';
+    ctx.fillRect(x-30, yy-20, 60, 40); ctx.shadowBlur = 0;
+    if (!paused && Math.abs(yy - player.y) < 30 && player.lane === seg.lane) {
+      running = false; showToast('Fried by a firewall. Press Start to try again.'); saveBest();
+      document.getElementById('title').style.display = 'flex';
+    }
+  }
+  ctx.restore();
+}
+
+function drawHUD() {
+  document.getElementById('speed').textContent = speedMul.toFixed(1)+'x';
+  document.getElementById('score').textContent = Math.floor(score);
+}
+
+function gameLoop(ts) {
+  if (!running) return;
+  const dt = ts - lastTime; lastTime = ts; t += dt/16.666;
+  if (!paused) score += dt * 0.02 * (1 + (speedMul-1)*0.6);
+  drawBackground(); drawObstacles(); drawPlayer(); drawHUD();
+  for (const fw of firewalls) {
+    const yy = fw.y + t*speed*speedMul;
+    if (fw.active && yy > player.y - 120) { fw.active = false; triggerPuzzle(); break; }
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+// Controls: keyboard, taps, swipes
+window.addEventListener('keydown', (e)=>{
+  if (e.key==='a' || e.key==='ArrowLeft') player.lane = Math.max(0, player.lane-1);
+  if (e.key==='d' || e.key==='ArrowRight') player.lane = Math.min(2, player.lane+1);
+  if (e.key==='p' || e.key==='P') togglePause();
+});
+canvas.addEventListener('click', (e)=>{
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  player.lane = x < rect.width/2 ? Math.max(0, player.lane-1) : Math.min(2, player.lane+1);
+});
+let touchStartX=null;
+canvas.addEventListener('touchstart', (e)=>{ touchStartX = e.changedTouches[0].clientX; });
+canvas.addEventListener('touchend', (e)=>{
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (dx < -20) player.lane = Math.max(0, player.lane-1);
+  if (dx >  20) player.lane = Math.min(2, player.lane+1);
+});
+
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  reset(); document.getElementById('title').style.display = 'none';
+  running = true; paused = false; lastTime = performance.now(); requestAnimationFrame(gameLoop);
+});
+
+function togglePause(){ paused = !paused; showToast(paused?'Paused':'Resumed'); }
+
+// --- Puzzles (tap-friendly) ---
+const PUZZLES = {
+  anomaly: () => {
+    const start = Math.floor(Math.random()*8)+2;
+    const step = Math.floor(Math.random()*5)+2;
+    const arr = Array.from({length:6}, (_,i)=> start + i*step);
+    const wrongIndex = Math.floor(Math.random()*6);
+    arr[wrongIndex] += (Math.random()<0.5?1:-1) * (Math.floor(Math.random()*step)+1);
+    const correct = start + wrongIndex*step;
+    const html = `
+      <h2>Spot the anomaly</h2>
+      <div class="meta">One term breaks the pattern. Tap it.</div>
+      <div class="grid">
+        ${arr.map((v,i)=>`<div class="card" data-ok="${v===correct?'1':'0'}">${v}</div>`).join('')}
+      </div>`;
+    return { html, init:(box)=>{
+      box.querySelectorAll('.card').forEach(el=> el.addEventListener('click', ()=>{
+        box.querySelectorAll('.card').forEach(c=> c.classList.remove('sel'));
+        el.classList.add('sel'); el.dataset.selected='1';
+      }));
+    }, check:(box)=> {
+      const sel = box.querySelector('.card.sel');
+      return sel && sel.dataset.ok==='1';
+    }};
+  },
+  order: () => {
+    const bank = [
+      ["SET total TO 0","FOR n FROM 1 TO 5","SET total TO total + n","END FOR","OUTPUT total"],
+      ["SET max TO list[0]","FOR item IN list","IF item > max THEN","SET max TO item","END IF","END FOR","OUTPUT max"],
+      ["SET count TO 0","FOR each char IN text","IF char IS vowel THEN","INCREMENT count","END IF","END FOR","OUTPUT count"]
+    ];
+    const pick = bank[Math.floor(Math.random()*bank.length)];
+    const shuffled = pick.slice().sort(()=>Math.random()-0.5);
+    const html = `
+      <h2>Order the steps</h2>
+      <div class="meta">Tap two lines to <b>swap</b> until valid pseudocode.</div>
+      <div class="codecol" id="orderList">
+        ${shuffled.map((l,i)=>`<div class="card code">${l}</div>`).join('')}
+      </div>`;
+    return { html, init:(box)=>{
+      let first=null;
+      box.querySelectorAll('.code').forEach(el=>{
+        el.addEventListener('click', ()=>{
+          if (!first) { first = el; el.classList.add('sel'); }
+          else if (first === el) { el.classList.remove('sel'); first = null; }
+          else {
+            const a = first, b = el;
+            a.classList.remove('sel');
+            const parent = a.parentElement;
+            const an = a.nextSibling === b ? a : a.nextSibling;
+            b.replaceWith(a.cloneNode(true));
+            a.replaceWith(b.cloneNode(true));
+            // Rebind events by reinitializing
+            const repl = parent.querySelectorAll('.code');
+            repl.forEach(n=> n.replaceWith(n.cloneNode(true)));
+            // Fresh binding
+            let temp = parent.querySelectorAll('.code');
+            temp.forEach(n=>{
+              n.addEventListener('click', ()=>{}); // no-op to ensure element is interactive
+            });
+            first = null;
+            // Simpler: rebuild list preserving order
+            const items = Array.from(parent.querySelectorAll('.code')).map(n=>n.textContent.trim());
+            parent.innerHTML = items.map(t=>`<div class="card code">${t}</div>`).join('');
+            // Rebind properly
+            parent.querySelectorAll('.code').forEach(n=>{
+              n.addEventListener('click', arguments.callee);
+            });
+          }
+        });
+      });
+    }, check:(box)=> {
+      const kids = [...box.querySelectorAll('#orderList .code')].map(n=>n.textContent.trim());
+      return JSON.stringify(kids) === JSON.stringify(pick);
+    }};
+  },
+  rule: () => {
+    const types = [
+      (a)=>({series:[a,a+2,a+4,a+6], ans:a+8}),
+      (a)=>({series:[a,a*2,a*3], ans:a*4}),
+      (a)=>({series:[a,a+1,a+1,a+2,a+2], ans:a+3}),
+    ];
+    const base = Math.floor(Math.random()*6)+2;
+    const r = types[Math.floor(Math.random()*types.length)](base);
+    const options = [r.ans, r.ans+1, r.ans-1].sort(()=>Math.random()-0.5);
+    const html = `
+      <h2>Complete the sequence</h2>
+      <div class="meta">${r.series.join(', ')}, <b>?</b></div>
+      <div class="grid">
+        ${options.map(v=>`<div class="card">${v}</div>`).join('')}
+      </div>`;
+    return { html, init:(box)=>{
+      box.querySelectorAll('.card').forEach(el=> el.addEventListener('click', ()=>{
+        box.querySelectorAll('.card').forEach(c=> c.classList.remove('sel'));
+        el.classList.add('sel'); el.dataset.selected='1';
+      }));
+    }, check:(box)=> {
+      const sel = box.querySelector('.card.sel');
+      return sel && Number(sel.textContent.trim()) === r.ans;
+    }};
+  }
+};
+
+let puzzleTimer = null;
+function triggerPuzzle() {
+  paused = true;
+  const overlay = document.getElementById('puzzleOverlay');
+  const box = document.getElementById('puzzle');
+  overlay.style.display = 'flex';
+  const keys = Object.keys(PUZZLES);
+  const key = keys[Math.floor(Math.random()*keys.length)];
+  const { html, init, check } = PUZZLES[key]();
+  box.innerHTML = html + `<div class="actions">
+    <div class="pill timer">⏱ <span id="timeLeft">12</span>s</div>
+    <div style="display:flex; gap:8px;">
+      <button id="skipBtn">Skip (-200)</button>
+      <button id="submitBtn">Submit</button>
+    </div>
+  </div>`;
+
+  // Init tap handlers
+  if (init) init(box);
+
+  // timer
+  let left = 12; const timeEl = document.getElementById('timeLeft');
+  puzzleTimer = setInterval(()=>{ left--; timeEl.textContent = left; if (left<=0) { failPuzzle('Timed out'); } }, 1000);
+
+  box.querySelector('#skipBtn').addEventListener('click', ()=>{
+    score = Math.max(0, score - 200); closePuzzle(false); showToast('Skipped (-200).');
+  });
+  box.querySelector('#submitBtn').addEventListener('click', ()=>{
+    const ok = check(box);
+    if (ok) { score += 300; speedMul = Math.min(3.0, speedMul + 0.1); closePuzzle(true); showToast('Access granted! +300, speed up'); }
+    else { failPuzzle('Access denied'); }
+  });
+}
+
+function failPuzzle(msg){ showToast(msg + '. Speed reset.'); speedMul = Math.max(1.0, speedMul*0.85); closePuzzle(false); }
+function closePuzzle(solved){ clearInterval(puzzleTimer); puzzleTimer=null; document.getElementById('puzzleOverlay').style.display='none'; paused=false; }
+function showToast(text){ const t=document.getElementById('toast'); t.textContent=text; t.style.display='block'; setTimeout(()=> t.style.display='none', 1600); }
+function saveBest(){ best = Math.max(best, Math.floor(score)); localStorage.setItem('hackrunner_best', best); document.getElementById('best').textContent = best; }
+</script>
+</body>
+</html>
